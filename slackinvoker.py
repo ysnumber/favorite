@@ -7,7 +7,7 @@ from slackbot.bot import listen_to
 import re
 import datetime
 import os
-from favorite import XyzSearcher
+from XyzSearcher import XyzSearcher
 
 flg = 0
 ym = ""
@@ -23,6 +23,9 @@ def prompt(message):
     xs = XyzSearcher()
     message.reply("\n通常検索：s [場所]、[カテゴリ]\n短縮検索：x [場所]、[検索ワード]\nハイランク検索：sh [場所]、[検索ワード]")
 
+@listen_to(r'^[cC]')
+def catalogList(message):
+    message.reply(xs.catlist())
 
 @listen_to(r'^[sxSX][h]? ')
 def search(message):
@@ -42,10 +45,10 @@ def search(message):
 
     message.send("検索します。お待ちください。")
     print("{0:%Y/%m/%d %H:%M:%S}".format(datetime.datetime.now()) + " ☆FavoriteSearch Start")
-    message.reply(xs.searchList(area, word))
+    message.reply(xs.searchList(area, cat))
     print("{0:%Y/%m/%d %H:%M:%S}".format(datetime.datetime.now()) + " ☆FavoriteSearch End")
 
-    message.send(ts.getCurrentUrl())
+    message.send(xs.getCurrentUrl())
 
 
 if __name__ == "__main__":

@@ -37,6 +37,7 @@ class XyzSearcher():
             options.add_argument("--headless")
             options.add_argument('--no-sandbox')
             options.add_argument('--disable-dev-shm-usage')
+            options.add_argument('--log-level=1')
             driver = webdriver.Chrome(options=options)
         else:
             driver = webdriver.Chrome("./chromedriver.exe") # さっきDLしたchromedriver.exeを使う
@@ -73,43 +74,81 @@ class XyzSearcher():
     
     def searchList(ts, erea, cat):
         global driver
+        retstr = ""
+
+        try:
+            ts.getDriver()
+
+            driver.get("http://xn--qck4e3a468yfxr0q3azkrifd985b.xyz/?s=" + erea + "&cat=" + cat)
+            # driver.get("http://xn--qck4e3a468yfxr0q3azkrifd985b.xyz/?s=%E9%8A%80%E5%BA%A7&cat=191&paged=8")
+            
+            ts.curl = driver.current_url
+
+            retstr += ts.getPageInfo()
+
+            while(driver.find_element_by_xpath("//li[contains(@class,'current')]/following-sibling::li").get_attribute("class") != "next"):
+                driver.execute_script("arguments[0].click();",driver.find_element_by_xpath("//li[contains(@class,'next')]/a"))
+                retstr += ts.getPageInfo()
+
+            driver.quit()
+        except NoSuchElementException as e:
+            print(traceback.format_exc())
+            driver.close()
+            return traceback.format_exc()
+        except Exception as e:
+            print(traceback.format_exc())
+            driver.close()
+            return traceback.format_exc()
+
+        print(restr)
+        return retstr
+
+    def getPageInfo(ts):
         befhref = ""
         retstr = ""
 
-        ts.getDriver()
-
-        driver.get("http://xn--qck4e3a468yfxr0q3azkrifd985b.xyz/?s=" + erea + "&cat=" + cat)
-
+        print("★" + driver.find_element_by_xpath("//li[contains(@class,'current')]/a").get_attribute("innerText") + "    " + driver.current_url)
         links = driver.find_elements_by_xpath("//a[contains(@class,'entry-title-link')]")
         
         for w in links:
             title = w.get_attribute("innerText")
-            r = re.search("^(.+)さん[がの]?(.+)【(.+)】", title)
+            r = re.search("^(.+)さん[がの]?([^【】]+)(【(.+)】)?", title)
+            if(r is None):
+                r = re.search("^([^【】]+)[がの]([^【】]+)(【(.+)】)?", title)
             person = r.group(1)
             reason = r.group(2)
-            tvprogram = r.group(3)
+            tvprogram = r.group(4)
+
+            if(tvprogram is None):
+                tvprogram = ""
+
+            # if(r.group(3) is not None):
+            #     tvprogram = r.group(3)
+            # else:
+            #     tvprogram = ""
+            print("#" + str(tvprogram))
             href = w.get_attribute("href")
 
-            retstr += "\n番組:" + tvprogram + "  タレント：" + person + "   " + reason
+            retstr += "\n▼[番組]" + tvprogram + "  [タレント]" + person + "   " + reason
 
             driver.execute_script("window.open()")
             driver.switch_to.window(driver.window_handles[1])
             driver.get(href)
 
-            tabelogs = driver.find_elements_by_xpath("//a[contains(@href,'https://tabelog.com/')]")
+            tabelogs = driver.find_elements_by_xpath("//a[contains(@href,'https://tabelog.com/') and contains(@class,'blog-card-title-link')]")
 
             for w2 in tabelogs:
                 if(befhref != w2.get_attribute("href")):
-                    retstr += "\n" + w2.get_attribute("href")
+                    retstr += "\n　・" + w2.get_attribute("innerText") + "\n　　" + w2.get_attribute("href")
 
                 befhref = w2.get_attribute("href")
 
             driver.close()
             driver.switch_to.window(driver.window_handles[0])
-
-        driver.close()
         return retstr
 
+    def getCurrentUrl(ts):
+        return ts.curl
 
 if __name__ == "__main__":
     xyzobj = XyzSearcher()
