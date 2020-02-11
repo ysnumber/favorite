@@ -25,7 +25,8 @@ def prompt(message):
 
 @listen_to(r'^[cC]')
 def catalogList(message):
-    message.reply(xs.catlist())
+    xs.getCategory()
+    message.reply(xs.createCategoryString())
 
 @listen_to(r'^[sxSX][h]? ')
 def search(message):

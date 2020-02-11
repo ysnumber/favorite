@@ -17,6 +17,15 @@ import traceback
 import os
 import urllib.parse
 
+import logging
+from logging import getLogger, StreamHandler, DEBUG
+logger = getLogger(__name__)
+handler = logging.FileHandler("Favorite.log", mode='a', encoding='utf-8')
+handler.setLevel(DEBUG)
+handler.setFormatter(logging.Formatter('%(asctime)s    %(message)s'))
+logger.setLevel(DEBUG)
+logger.addHandler(handler)
+logger.propagate = False
 
 chrome_mode="headless"
 # chrome_mode=""
@@ -72,42 +81,42 @@ class XyzSearcher():
             ret += w + "\n"
         return ret
     
-    def searchList(ts, erea, cat):
+    def searchList(ts, area, cat):
         global driver
         retstr = ""
 
         try:
             ts.getDriver()
 
-            driver.get("http://xn--qck4e3a468yfxr0q3azkrifd985b.xyz/?s=" + erea + "&cat=" + cat)
+            driver.get("http://xn--qck4e3a468yfxr0q3azkrifd985b.xyz/?s=" + area + "&cat=" + cat)
             # driver.get("http://xn--qck4e3a468yfxr0q3azkrifd985b.xyz/?s=%E9%8A%80%E5%BA%A7&cat=191&paged=8")
             
             ts.curl = driver.current_url
 
-            retstr += ts.getPageInfo()
+            retstr += ts.getPageInfo(area)
 
             while(driver.find_element_by_xpath("//li[contains(@class,'current')]/following-sibling::li").get_attribute("class") != "next"):
                 driver.execute_script("arguments[0].click();",driver.find_element_by_xpath("//li[contains(@class,'next')]/a"))
-                retstr += ts.getPageInfo()
+                retstr += ts.getPageInfo(area)
 
             driver.quit()
         except NoSuchElementException as e:
-            print(traceback.format_exc())
+            logger.warning(traceback.format_exc())
             driver.close()
             return traceback.format_exc()
         except Exception as e:
-            print(traceback.format_exc())
+            logger.warning(traceback.format_exc())
             driver.close()
             return traceback.format_exc()
 
-        print(restr)
+        logger.debug(retstr)
         return retstr
 
-    def getPageInfo(ts):
+    def getPageInfo(ts,area):
         befhref = ""
         retstr = ""
 
-        print("★" + driver.find_element_by_xpath("//li[contains(@class,'current')]/a").get_attribute("innerText") + "    " + driver.current_url)
+        logger.debug("★" + driver.find_element_by_xpath("//li[contains(@class,'current')]/a").get_attribute("innerText") + "    " + driver.current_url)
         links = driver.find_elements_by_xpath("//a[contains(@class,'entry-title-link')]")
         
         for w in links:
@@ -126,7 +135,7 @@ class XyzSearcher():
             #     tvprogram = r.group(3)
             # else:
             #     tvprogram = ""
-            print("#" + str(tvprogram))
+            logger.debug("#" + str(tvprogram))
             href = w.get_attribute("href")
 
             retstr += "\n▼[番組]" + tvprogram + "  [タレント]" + person + "   " + reason
@@ -139,7 +148,8 @@ class XyzSearcher():
 
             for w2 in tabelogs:
                 if(befhref != w2.get_attribute("href")):
-                    retstr += "\n　・" + w2.get_attribute("innerText") + "\n　　" + w2.get_attribute("href")
+                    if(re.search(area, w2.get_attribute("innerText"))):
+                        retstr += "\n　・" + w2.get_attribute("innerText") + "\n　　" + w2.get_attribute("href")
 
                 befhref = w2.get_attribute("href")
 
@@ -155,3 +165,4 @@ if __name__ == "__main__":
     # xyzobj.getCategory()
     # print(xyzobj.createCategoryString())
     print(xyzobj.searchList("銀座", "200"))
+    print(xyzobj.getCurrentUrl())
