@@ -92,8 +92,8 @@ class GMapSearcher():
                     descript = descript.get_attribute("innerText")
                 else: descript = ""
 
-                linkParent = self.getWebElementByXpathObject(driver, "//div[contains(@class,'fO2voc-jRmmHf-LJTIlf')]")
-                link = self.getWebElementByXpathObject(linkParent, "//a[contains(@href,'http')]")
+                link = self.getWebElementByXpathObject(driver, "//div[contains(@class,'fO2voc-jRmmHf-LJTIlf')]//a[contains(@href,'http') and not(contains(@href,'https://www.google.com'))]")
+                # link = self.getWebElementByXpathObject(linkParent, "//a[contains(@href,'http') and not(contains(@href,'https://www.google.com'))]")
                 if(link is not None):
                     link = link.get_attribute("href")
                 else: link = ""
