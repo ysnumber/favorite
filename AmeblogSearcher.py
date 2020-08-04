@@ -77,8 +77,6 @@ class AmeblogSearcher():
                 sleep(1)
 
                 cnt += 1
-                if(cnt > 10):
-                    break;
 
         except NoSuchElementException:
             print(driver.current_url)
@@ -95,7 +93,7 @@ class AmeblogSearcher():
     def getPageData(self):
         global driver
         ts = TabelogSearcher()
-        ts.setMaxRow = 1
+        ts.setMaxRow(1)
         try:
             self.rcnt += 1
             title = driver.find_element_by_xpath("//a[@class='skinArticleTitle']").text
@@ -105,6 +103,8 @@ class AmeblogSearcher():
             area = ""
             shop = ""
             tabelog = ""
+
+            body = re.sub(r"^\n", "", body)
 
             ret = re.search("(http.+$)", body)
 
