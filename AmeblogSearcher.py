@@ -48,7 +48,6 @@ class AmeblogSearcher():
             options.add_argument("--headless")
             options.add_argument('--no-sandbox')
             options.add_argument('--disable-dev-shm-usage')
-            options.add_argument('--disable-dev-shm-usage')
             options.add_argument('--log-level=1')
             driver = webdriver.Chrome(options=options)
         else:
@@ -104,7 +103,7 @@ class AmeblogSearcher():
             shop = ""
             tabelog = ""
 
-            body = re.sub(r"^\n", "", body)
+            body = re.sub(r'^\s*\n', '', body,0,re.MULTILINE)
 
             ret = re.search("(http.+$)", body)
 
