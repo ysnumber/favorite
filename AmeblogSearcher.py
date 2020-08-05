@@ -78,12 +78,12 @@ class AmeblogSearcher():
                 cnt += 1
 
         except NoSuchElementException:
-            print(driver.current_url)
-            print(traceback.format_exc())
+            logger.error(driver.current_url)
+            logger.error(traceback.format_exc())
 
-        except Exception:
-            print(driver.current_url)
-            print(traceback.format_exc())
+        except Exception as e:
+            logger.error(driver.current_url)
+            logger.error(traceback.format_exc())
 
 
         # print(self.text)
