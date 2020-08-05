@@ -91,6 +91,9 @@ class AmeblogSearcher():
 
     def getPageData(self):
         global driver
+
+        self.openSpread()
+
         ts = TabelogSearcher()
         ts.setMaxRow(1)
         try:
@@ -136,9 +139,10 @@ class AmeblogSearcher():
         credentials = ServiceAccountCredentials.from_json_keyfile_name('./WebTrainProject-a52aed0e9fb4.json', scope)
         gc = gspread.authorize(credentials)
         self.wks = gc.open("Watabelog").sheet1
-        self.wks.clear()
+        
 
     def setHeader(self):
+        self.wks.clear()
         self.wks.update_acell("A" + str(self.rcnt), "タイトル")
         self.wks.update_acell("B" + str(self.rcnt), "テーマ")
         self.wks.update_acell("C" + str(self.rcnt), "エリア")
