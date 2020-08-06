@@ -81,10 +81,11 @@ class AmeblogSearcher():
             logger.error(driver.current_url)
             logger.error(traceback.format_exc())
 
-        except Exception as e:
+        except:
             logger.error(driver.current_url)
             logger.error(traceback.format_exc())
 
+        
 
         # print(self.text)
         driver.close()
