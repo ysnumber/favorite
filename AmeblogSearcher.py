@@ -38,7 +38,7 @@ class AmeblogSearcher():
         self.curl = ""
         self.text = ""
         self.wks = None
-        self.rcnt = 1
+        self.rcnt = 249
 
     def getDriver(self):
         global driver
@@ -59,7 +59,9 @@ class AmeblogSearcher():
         try:
             self.getDriver()
 
-            driver.get("https://ameblo.jp/watabearuki/entrylist.html")
+            # driver.get("https://ameblo.jp/watabearuki/entrylist.html")
+            driver.get("https://ameblo.jp/watabearuki/entry-12491231102.html")
+            
             atag = driver.find_element_by_xpath('//li[@class="skin-borderQuiet" and position() = 1]/div/div[2]/h2/a')
             atag.click()
 
