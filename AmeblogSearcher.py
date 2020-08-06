@@ -62,13 +62,13 @@ class AmeblogSearcher():
             # driver.get("https://ameblo.jp/watabearuki/entrylist.html")
             driver.get("https://ameblo.jp/watabearuki/entry-12491231102.html")
             
-            atag = driver.find_element_by_xpath('//li[@class="skin-borderQuiet" and position() = 1]/div/div[2]/h2/a')
-            atag.click()
+            # atag = driver.find_element_by_xpath('//li[@class="skin-borderQuiet" and position() = 1]/div/div[2]/h2/a')
+            # atag.click()
 
             cnt = 0
 
-            self.openSpread()
-            self.setHeader()
+            # self.openSpread()
+            # self.setHeader()
 
             while(True):
                 WebDriverWait(driver, 30).until(EC.visibility_of_element_located((By.XPATH, "//a[@class='skinArticleTitle']")))
